@@ -12,6 +12,7 @@ import EventosScreen from './screens/EventosScreen';
 import CultosScreen from './screens/CultosScreen';
 import CursosScreen from './screens/CursosScreen';
 import AdminPanelScreen from './screens/AdminPanelScreen';
+import RegisterScreen from './screens/RegisterScreen'; // Importar a tela de cadastro
 
 const Stack = createStackNavigator();
 
@@ -53,8 +54,11 @@ export default function App() {
             <Stack.Screen name="AdminPanel" component={AdminPanelScreen} />
           </>
         ) : (
-          // Usuário não autenticado - tela de login
-          <Stack.Screen name="Login" component={LoginScreen} />
+          // Usuário não autenticado - tela de login e cadastro
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

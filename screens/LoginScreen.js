@@ -13,9 +13,8 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { auth, db } from '../firebaseConfig';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
+import { GoogleSignin, GoogleAuthProvider } from '@react-native-google-signin/google-signin';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 
 const LoginScreen = ({ navigation }) => {
@@ -103,6 +102,24 @@ const LoginScreen = ({ navigation }) => {
     }
   };
 
+  // Recuperar senha
+  const handleForgotPassword = async () => {
+    if (!email) {
+      Alert.alert('Erro', 'Por favor, digite seu email para redefinir a senha.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Sucesso', 'Um email de redefinição de senha foi enviado para ' + email);
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível enviar o email de redefinição. Verifique o email digitado.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <KeyboardAvoidingView 
       style={styles.container} 
@@ -153,7 +170,7 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           {/* Link Esqueceu a senha */}
-          <TouchableOpacity style={styles.forgotPasswordContainer}>
+          <TouchableOpacity style={styles.forgotPasswordContainer} onPress={handleForgotPassword}>
             <Text style={styles.forgotPasswordText}>Esqueceu a senha?</Text>
           </TouchableOpacity>
 
@@ -179,6 +196,14 @@ const LoginScreen = ({ navigation }) => {
           >
             <Ionicons name="logo-google" size={20} color="#000" style={styles.googleIcon} />
             <Text style={styles.googleButtonText}>Entrar com Google</Text>
+          </TouchableOpacity>
+
+          {/* Botão de Cadastro */}
+          <TouchableOpacity 
+            style={styles.registerButton} 
+            onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={styles.registerButtonText}>Criar uma nova conta</Text>
           </TouchableOpacity>
         </ScrollView>
       </LinearGradient>
@@ -299,6 +324,15 @@ const styles = StyleSheet.create({
   },
   disabledButton: {
     opacity: 0.6,
+  },
+  registerButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  registerButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
 });
 
